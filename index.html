@@ -1,149 +1,156 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>小晗同学</title><!-- 这是网页标题 -->
-<style>
-body{
-  overflow: hidden;
-  margin: 0;
-}
-h1{
-  position: fixed;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  transform:translateY(-50%);
-  font-family: 'Love Ya Like A Sister', cursive;
-  font-size: 40px;
-  color: #c70012;
-  padding: 0 20px;
-}
-h1 span{
-    font-size:20px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>老陈相册</title>
+  <link rel="stylesheet" href="./css/bootstrap.min.css" >
+  <link rel="stylesheet" href="./css/viewer.min.css">
+  <style>
+    .container {
+      padding: 0;
+    }
+    #galley {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-content: center;
+    }
+    .pictures {
+      list-style: none;
+      margin: 0;
+      max-width: 100%;
+      padding: 0;
+    }
 
+    .pictures > li {
+      border: 1px solid transparent;
+      float: left;
+      height: calc(100% / 3);
+      margin: 0px -1px -1px 0;
+      overflow: hidden;
+      width: calc(100% / 3);
+    }
+
+    .pictures > li > img {
+      cursor: zoom-in;
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
-<h1 id="h1"></h1>
-<canvas></canvas> <!--canvas 画布-->
+  <div class="container">
+    <h1>2021</h1>
+    <div id="galley">
+      <ul class="pictures">
+        <li><img data-original="./image/1.jpeg" src="./image/1.jpeg" alt="1"></li>
+        <li><img data-original="./image/2.jpeg" src="./image/2.jpeg" alt="2"></li>
+        <li><img data-original="./image/3.PNG" src="./image/3.PNG" alt="3"></li>
+        <li><img data-original="./image/4.jpg" src="./image/4.jpg" alt="4"></li>
+        <li><img data-original="./image/5.jpg" src="./image/5.jpg" alt="5"></li>
+        <li><img data-original="./image/6.jpg" src="./image//6.jpg" alt="6"></li>
+      </ul>
+      <h1>2022</h1>
+      <ul class="pictures">
+        <li><img data-original="./image/1.jpeg" src="./image/1.jpeg" alt="7"></li>
+        <li><img data-original="./image/1.jpeg" src="./image/1.jpeg" alt="7"></li>
+        <li><img data-original="./image/1.jpeg" src="./image/1.jpeg" alt="7"></li>
+        <li><img data-original="./image/1.jpeg" src="./image/1.jpeg" alt="7"></li>
+        <li><img data-original="./image/1.jpeg" src="./image/1.jpeg" alt="7"></li>
+        <li><img data-original="./image/1.jpeg" src="./image/1.jpeg" alt="7"></li>
+        <li><img data-original="./image/1.jpeg" src="./image/1.jpeg" alt="7"></li>
+        <li><img data-original="./image/1.jpeg" src="./image/1.jpeg" alt="7"></li>
+      </ul>
+      <h1>2023</h1>
+      <ul class="pictures">
+        <li><img data-original="./image/1.jpeg" src="./image/1.jpeg" alt="7"></li>
+        <li><img data-original="./image/2.jpeg" src="./image/2.jpeg" alt="8"></li>
+        <li><img data-original="./image/3.PNG" src="./image/3.PNG" alt="9"></li>
+        <li><img data-original="./image/4.jpg" src="./image/4.jpg" alt="10"></li>
+        <li><img data-original="./image/5.jpg" src="./image/5.jpg" alt="11"></li>
+        <li><img data-original="./image/6.jpg" src="./image//6.jpg" alt="12"></li>
+      </ul>
+    </div>
+  </div>
 
-<script>
-var canvas = document.querySelector("canvas"),
-  ctx = canvas.getContext("2d");
+  <script src="./js/jquery.slim.min.js"></script>
+  <script src="./js/bootstrap.bundle.min.js"></script>
+  <script src="./js/viewer.min.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      var galley = document.getElementById('galley');
+      var maxOffsetPercentage = 0.9;
+      var viewer = new Viewer(galley, {
+        url: 'data-original',
+        backdrop: 'static',
+        move: function (event) {
+          var viewerData = viewer.viewerData;
+          var imageData = viewer.imageData;
+          var maxOffsetHorizontal = viewerData.width * maxOffsetPercentage;
+          var maxOffsetVertical = viewerData.height * maxOffsetPercentage;
+          var detail = event.detail;
+          var left = detail.x;
+          var top = detail.y;
+          var right = viewerData.width - (left + imageData.width);
+          var bottom = viewerData.height - (top + imageData.height);
 
-var ww,wh;
+          if (
+            // Move left
+            (detail.x < detail.oldX && right > 0 && right > maxOffsetHorizontal)
 
-function onResize(){
-  ww = canvas.width = window.innerWidth;
-  wh = canvas.height = window.innerHeight;
-}
+            // Move right
+            || (detail.x > detail.oldX && left > 0 && left > maxOffsetHorizontal)
 
-ctx.strokeStyle = "red";
-ctx.shadowBlur = 25;
-ctx.shadowColor = "hsla(0, 100%, 60%,0.5)";
+            // Move up
+            || (detail.y < detail.oldY && bottom > 0 && bottom > maxOffsetVertical)
 
-var precision = 100;
-var hearts = [];
-var mouseMoved = false;
-function onMove(e){
-  mouseMoved = true;
-  if(e.type === "touchmove"){
-    hearts.push(new Heart(e.touches[0].clientX, e.touches[0].clientY));
-    hearts.push(new Heart(e.touches[0].clientX, e.touches[0].clientY));
-  }
-  else{
-    hearts.push(new Heart(e.clientX, e.clientY));
-    hearts.push(new Heart(e.clientX, e.clientY));
-  }
-}
+            // Move down
+            || (detail.y > detail.oldY && top > 0 && top > maxOffsetVertical)
+          ) {
+            event.preventDefault();
+          }
+        },
+        zoomed: function (event) {
+          var detail = event.detail;
 
-var Heart = function(x,y){
-  this.x = x || Math.random()*ww;
-  this.y = y || Math.random()*wh;
-  this.size = Math.random()*2 + 1;
-  this.shadowBlur = Math.random() * 10;
-  this.speedX = (Math.random()+0.2-0.6) * 8;
-  this.speedY = (Math.random()+0.2-0.6) * 8;
-  this.speedSize = Math.random()*0.05 + 0.01;
-  this.opacity = 1;
-  this.vertices = [];
-  for (var i = 0; i < precision; i++) {
-    var step = (i / precision - 0.5) * (Math.PI * 2);
-    var vector = {
-      x : (15 * Math.pow(Math.sin(step), 3)),
-      y : -(13 * Math.cos(step) - 5 * Math.cos(2 * step) - 2 * Math.cos(3 * step) - Math.cos(4 * step)) 
-    }
-    this.vertices.push(vector);
-  }
-}
+          // Zoom out
+          if (detail.ratio < detail.oldRatio) {
+            var viewerData = viewer.viewerData;
+            var imageData = viewer.imageData;
+            var maxOffsetHorizontal = viewerData.width * maxOffsetPercentage;
+            var maxOffsetVertical = viewerData.height * maxOffsetPercentage;
+            var left = imageData.x;
+            var top = imageData.y;
+            var right = viewerData.width - (left + imageData.width);
+            var bottom = viewerData.height - (top + imageData.height);
+            var x = 0;
+            var y = 0;
 
-Heart.prototype.draw = function(){
-  this.size -= this.speedSize;
-  this.x += this.speedX;
-  this.y += this.speedY;
-  ctx.save();
-  ctx.translate(-1000,this.y);
-  ctx.scale(this.size, this.size);
-  ctx.beginPath();
-  for (var i = 0; i < precision; i++) {
-    var vector = this.vertices[i];
-    ctx.lineTo(vector.x, vector.y);
-  }
-  ctx.globalAlpha = this.size;
-  ctx.shadowBlur = Math.round((3 - this.size) * 10);
-  ctx.shadowColor = "hsla(0, 100%, 60%,0.5)";
-  ctx.shadowOffsetX = this.x + 1000;
-  ctx.globalCompositeOperation = "screen"
-  ctx.closePath();
-  ctx.fill()
-  ctx.restore();
-};
+            if (right > 0 && right > maxOffsetHorizontal) {
+              x = maxOffsetHorizontal - right;
+            }
 
+            if (left > 0 && left > maxOffsetHorizontal) {
+              x = maxOffsetHorizontal - left;
+            }
 
-function render(a){
-  requestAnimationFrame(render);
+            if (bottom > 0 && bottom > maxOffsetVertical) {
+              y = bottom - maxOffsetVertical;
+            }
 
-  hearts.push(new Heart())
-  ctx.clearRect(0,0,ww,wh);
-  for (var i = 0; i < hearts.length; i++) {
-    hearts[i].draw();
-    if(hearts[i].size <= 0){
-      hearts.splice(i,1);
-      i--;
-    }
-  }
-}
+            if (top > 0 && top > maxOffsetVertical) {
+              y = top - maxOffsetVertical;
+            }
 
-
-onResize();
-window.addEventListener("mousemove", onMove);
-window.addEventListener("touchmove", onMove);
-window.addEventListener("resize", onResize);
-requestAnimationFrame(render);
-
-window.onload=function starttime(){
-        time(h1,'2023,1,19');     // 在一起的时间
-        ptimer = setTimeout(starttime,1000); // 添加计时器
-
-}
-
-    function time(obj,futimg){
-        var nowtime = new Date().getTime(); // 现在时间转换为时间戳
-        var futruetime =  new Date(futimg).getTime(); // 未来时间转换为时间戳
-        var msec = nowtime-futruetime; // 毫秒 未来时间-现在时间
-        var time = (msec/1000);  // 毫秒/1000
-        var day = parseInt(time/86400); // 天  24*60*60*1000 
-        var hour = parseInt(time/3600)-24*day;    // 小时 60*60 总小时数-过去的小时数=现在的小时数 
-        var minute = parseInt(time%3600/60); // 分 -(day*24) 以60秒为一整份 取余 剩下秒数 秒数/60 就是分钟数
-        var second = parseInt(time%60);  // 以60秒为一整份 取余 剩下秒数
-        obj.innerHTML="小晗同学<br>咱俩在一起的时间已经：<br>"+day+"天"+hour+"小时"+minute+"分"+second+"秒"+"了<br><span>中秋国庆临近，婚期也即将来临。<br>不管面临多大的压力,不管前面的路如何崎岖.<br>不管经历过什么,我仍坚信最浪漫的事就是和你一起慢慢变老.<br>相信中间的计时器,将永远继续下去,直至数据溢出.</span>"
-
-        return true;
-    }
-</script>
-
+            // Move the image into view if it is invisible
+            if (x !== 0 || y !== 0) {
+              viewer.move(x, y);
+            }
+          }
+        },
+      });
+    });
+  </script>
 </body>
 </html>
