@@ -1,0 +1,22 @@
+{
+    "name": "hello-webpack",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "webpack --watch",
+        "dev": "webpack-dev-server --open"
+    },
+    "dependencies": {
+        "webpack": "^5.88.2",
+        "webpack-cli": "^5.1.4"
+    },
+    "devDependencies": {
+        "css-loader": "^6.8.1",
+        "file-loader": "^6.2.0",
+        "html-webpack-plugin": "^5.5.3",
+        "html-withimg-loader": "^0.1.16",
+        "style-loader": "^3.3.3",
+        "uglifyjs-webpack-plugin": "^2.2.0",
+        "url-loader": "^4.1.1",
+        "webpack-dev-server": "^4.15.1"
+    }
+}
